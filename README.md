@@ -29,34 +29,19 @@ This gives you full control over how notifications are handled – logging, forw
 2. Add these 3 files:
 
 ### `__init__.py`
-```python
-# empty file
-```
 
----
+> [See code in `__init__.py`](./__init__.py) – or copy from the latest version.
+
 
 ### `manifest.json`
-```json
-{
-  "domain": "notiscript",
-  "name": "NotiScript Notify",
-  "version": "1.0.0",
-  "requirements": [],
-  "dependencies": [],
-  "codeowners": []
-}
-```
+> [See code in `manifest.json`](./manifest.json) – or copy from the latest version.
 
----
 
 ### `notify.py`
 > [See code in `notify.py`](./notify.py) – or copy from the latest version.
 
----
 
 3. Restart Home Assistant
-
----
 
 ## ⚙️ Configuration
 
