@@ -168,7 +168,9 @@ Because notify services are not entities – they are service endpoints only.
 
 ## 10. 🏁 Roadmap
 
-- Optional: entity registry integration (cosmetic)
+1. Optional: entity registry integration (cosmetic)
+
+2. Add a data structure `script_fields` that is an object and if given, the script is called with the fields filled according to this object. In other words: the script_fields are pulled to the top level so that the script could have these script_fields as "fields".
 
 ## 11. 📝 License
 
