@@ -36,13 +36,13 @@ This gives you full control over how notifications are handled – logging, forw
 
 2. Add file `__init__.py` to that folder
 
-   > [See code in `__init__.py`](./__init__.py) – or copy from the latest version.
+   > [See code in `__init__.py`](custom_components/notiscript/__init__.py) – or copy from the latest version.
 
 3. Add file `manifest.json` to  that folder
-   > [See code in `manifest.json`](./manifest.json) – or copy from the latest version.
+   > [See code in `manifest.json`](custom_components/notiscript/manifest.json) – or copy from the latest version.
 
 4. Add file `notify.py` to that folder
-    > [See code in `notify.py`](./notify.py) – or copy from the latest version.
+    > [See code in `notify.py`](custom_components/notiscript/notify.py) – or copy from the latest version.
 
 5. Restart Home Assistant
 
@@ -150,4 +150,4 @@ Because notify services are not entities – they are service endpoints only.
 
 ## 11. 📝 License
 
-MIT – Use freely and customize as needed.
+> [See `LICENSE`](./LICENSE)
