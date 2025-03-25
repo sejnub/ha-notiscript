@@ -1,12 +1,29 @@
 # NotiScript – Custom Notification Platform for Home Assistant
 
+- [1. 🔧 Features](#1--features)
+- [2. 📂 Installation](#2--installation)
+  - [2.1. `__init__.py`](#21-__init__py)
+  - [2.2. `manifest.json`](#22-manifestjson)
+  - [2.3. `notify.py`](#23-notifypy)
+- [3. ⚙️ Configuration](#3-️-configuration)
+- [4. 🚀 How It Works](#4--how-it-works)
+- [5. 🧪 Example Scripts](#5--example-scripts)
+- [6. 🧰 Example Automation](#6--example-automation)
+- [7. 🔍 Debugging](#7--debugging)
+- [8. 💬 FAQ](#8--faq)
+  - [8.1. Why is `notify.my_notify_handler` not visible as an entity?](#81-why-is-notifymy_notify_handler-not-visible-as-an-entity)
+- [9. 👨‍💻 Development Notes](#9--development-notes)
+- [10. 🏁 Roadmap](#10--roadmap)
+- [11. 📝 License](#11--license)
+
+---
+
 **NotiScript** is a custom `notify` platform for Home Assistant that allows you to route notifications to arbitrary scripts.
 
 This gives you full control over how notifications are handled – logging, forwarding, filtering, conditional actions, or even interacting with other systems.
 
----
 
-## 🔧 Features
+## 1. 🔧 Features
 
 - Acts like any standard `notify` platform
 - Forwards `message`, `title`, and `data` to a `script`
@@ -16,9 +33,8 @@ This gives you full control over how notifications are handled – logging, forw
   3. Fallback to the notifier name (e.g. `script.my_notify_handler`)
 - Works with automations, alerts, UI services
 
----
 
-## 📂 Installation
+## 2. 📂 Installation
 
 1. Create the folder structure:
 
@@ -28,22 +44,22 @@ This gives you full control over how notifications are handled – logging, forw
 
 2. Add these 3 files:
 
-### `__init__.py`
+### 2.1. `__init__.py`
 
 > [See code in `__init__.py`](./__init__.py) – or copy from the latest version.
 
 
-### `manifest.json`
+### 2.2. `manifest.json`
 > [See code in `manifest.json`](./manifest.json) – or copy from the latest version.
 
 
-### `notify.py`
+### 2.3. `notify.py`
 > [See code in `notify.py`](./notify.py) – or copy from the latest version.
 
 
 3. Restart Home Assistant
 
-## ⚙️ Configuration
+## 3. ⚙️ Configuration
 
 Add this to your `configuration.yaml`:
 
@@ -59,9 +75,7 @@ notify:
 | `name`     | ✅       | The notifier name, becomes `notify.<name>` |
 | `script`   | ❌       | Optional fallback script name if none given at runtime |
 
----
-
-## 🚀 How It Works
+## 4. 🚀 How It Works
 
 When you call:
 
@@ -82,9 +96,8 @@ The integration determines the script to call using this priority:
 
 The selected script receives all fields (`message`, `title`, `data`) as variables.
 
----
 
-## 🧪 Example Scripts
+## 5. 🧪 Example Scripts
 
 ```yaml
 script:
@@ -104,9 +117,8 @@ script:
           message: "{{ message }}"
 ```
 
----
 
-## 🧰 Example Automation
+## 6. 🧰 Example Automation
 
 ```yaml
 automation:
@@ -121,9 +133,8 @@ automation:
           title: "Time Check"
 ```
 
----
 
-## 🔍 Debugging
+## 7. 🔍 Debugging
 
 Enable debug logging in `configuration.yaml`:
 
@@ -136,32 +147,28 @@ logger:
 
 Check logs via **Developer Tools → Logs**.
 
----
 
-## 💬 FAQ
+## 8. 💬 FAQ
 
-### Why is `notify.my_notify_handler` not visible as an entity?
+### 8.1. Why is `notify.my_notify_handler` not visible as an entity?
 
 Because notify services are not entities – they are service endpoints only.
 
----
 
-## 👨‍💻 Development Notes
+## 9. 👨‍💻 Development Notes
 
 - Based on `BaseNotificationService`
 - Uses `async_call` to `script` domain
 - Accepts all standard `notify` fields: `message`, `title`, `target`, `data`
 - `target` is ignored (but can be forwarded if needed)
 
----
 
-## 🏁 Roadmap
+## 10. 🏁 Roadmap
 
 - Optional: support for script domains other than `script` (e.g. `automation`)
 - Optional: entity registry integration (cosmetic)
 
----
 
-## 📝 License
+## 11. 📝 License
 
 MIT – Use freely and customize as needed.
