@@ -1,0 +1,12 @@
+{
+    "domain": "notiscript",
+    "name": "NotiScript",
+    "version": "1.0.0",
+    "documentation": "https://github.com/sejnub/ha-notiscript", 
+    "issue_tracker": "https://github.com/sejnub/ha-notiscript/issues",
+    "dependencies": [],
+    "codeowners": ["@sejnub"],
+    "requirements": [],
+    "iot_class": "local_push",
+    "config_flow": false
+}
