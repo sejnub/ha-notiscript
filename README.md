@@ -30,6 +30,8 @@ This gives you full control over how notifications are handled – logging, forw
 
 ## 2. 📂 Installation
 
+You can find all the code at [GitHub / ha-notiscript](https://github.com/sejnub/ha-notiscript)
+
 ### 2.1. Install manually from repository
 
 1. Create the folder structure:
@@ -54,17 +56,15 @@ This gives you full control over how notifications are handled – logging, forw
 
 To install this integration using [HACS](https://hacs.xyz):
 
-1. Go to **HACS → Integrations → ⋮ → Custom repositories**
+1. Go to **HACS → ⋮ → Custom repositories**
 
-2. Add the repository URL:
+2. Add the repository 
 
-   ```url
-   https://github.com/sejnub/ha-notiscript
-   ```
-
-   Select category: **Integration**
+   - Repository:`https://github.com/sejnub/ha-notiscript`
+   - Type: `Integration`
 
 3. After adding, search for `NotiScript Notify` in HACS and install it
+
 4. Restart Home Assistant
 5. Configure as described in the following text
 
