@@ -3,5 +3,10 @@
     "codeowners",
     "Noti",
     "notiscript"
-  ]
+  ],
+  "workbench.colorCustomizations": {
+    "editor.lineHighlightBackground": "#000000",
+    "editor.lineHighlightBorder": "#ac00f0",
+    "editor.rangeHighlightBackground": "#454545"
+  }
 }

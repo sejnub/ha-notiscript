@@ -1,7 +1,6 @@
 # NotiScript – Custom Notification Platform for Home Assistant
 
-**NotiScript** is a custom `notify` platform for Home Assistant that allows you to route notifications to arbitrary scripts.
-This gives you full control over how notifications are handled – logging, forwarding, filtering, conditional actions, or even interacting with other systems.
+**NotiScript** is a custom `notify` platform for Home Assistant that provides some data transformation capabilities when routing notifications to scripts.
 
 - [1. 🔧 Features](#1--features)
 - [2. 📂 Installation](#2--installation)
@@ -9,23 +8,22 @@ This gives you full control over how notifications are handled – logging, forw
   - [2.2. Install via HACS (recommended)](#22-install-via-hacs-recommended)
 - [3. ⚙️ Configuration](#3-️-configuration)
 - [4. 🚀 How It Works](#4--how-it-works)
-- [5. 🧪 Example Scripts](#5--example-scripts)
-- [6. 🧰 Example Automation](#6--example-automation)
-- [7. 🔍 Debugging](#7--debugging)
-- [8. 💬 FAQ](#8--faq)
-  - [8.1. Why is `notify.my_notify_handler` not visible as an entity?](#81-why-is-notifymy_notify_handler-not-visible-as-an-entity)
-- [9. 👨‍💻 Development Notes](#9--development-notes)
-- [10. 🏁 Roadmap](#10--roadmap)
-- [11. 📝 License](#11--license)
+  - [4.1. Script Selection (script\_suffix)](#41-script-selection-script_suffix)
+  - [4.2. Data Transformation (script\_fields)](#42-data-transformation-script_fields)
+- [5. 🧪 Examples](#5--examples)
+  - [5.1. Basic Usage](#51-basic-usage)
+  - [5.2. Multiple Scripts](#52-multiple-scripts)
+  - [5.3. Dynamic Script Selection](#53-dynamic-script-selection)
+- [6. 🔍 Debugging](#6--debugging)
+- [7. 📚 Documentation](#7--documentation)
+- [8. License](#8-license)
 
 ## 1. 🔧 Features
 
 - Acts like any standard `notify` platform
-- Forwards `message`, `title`, and `data` to a `script`
-- Supports 3 levels of script resolution:
-  1. Dynamic at runtime via `data.script_id`
-  2. Static via `script:` option in `configuration.yaml`
-  3. Fallback to the notifier name (e.g. `script.my_notify_handler`)
+- Supports dynamic script selection with three priority levels
+- Provides data transformation capabilities
+- Preserves original notification data
 - Works with automations, alerts, UI services
 
 ## 2. 📂 Installation
@@ -34,21 +32,16 @@ You can find all the code at [GitHub / ha-notiscript](https://github.com/sejnub/
 
 ### 2.1. Install manually from repository
 
-1. Create the folder structure:
-
-   ```sh
-   <config_dir>/custom_components/notiscript/
-   ```
+1. Create the folder structure `<config_dir>/custom_components/notiscript/`
 
 2. Add file `__init__.py` to that folder
-
    > [See code in `__init__.py`](custom_components/notiscript/__init__.py) – or copy from the latest version.
 
-3. Add file `manifest.json` to  that folder
+3. Add file `manifest.json` to that folder
    > [See code in `manifest.json`](custom_components/notiscript/manifest.json) – or copy from the latest version.
 
 4. Add file `notify.py` to that folder
-    > [See code in `notify.py`](custom_components/notiscript/notify.py) – or copy from the latest version.
+   > [See code in `notify.py`](custom_components/notiscript/notify.py) – or copy from the latest version.
 
 5. Restart Home Assistant
 
@@ -57,14 +50,10 @@ You can find all the code at [GitHub / ha-notiscript](https://github.com/sejnub/
 To install this integration using [HACS](https://hacs.xyz):
 
 1. Go to **HACS → ⋮ → Custom repositories**
-
-2. Add the repository 
-
-   - Repository:`https://github.com/sejnub/ha-notiscript`
+2. Add the repository:
+   - Repository: `https://github.com/sejnub/ha-notiscript`
    - Type: `Integration`
-
 3. After adding, search for `NotiScript Notify` in HACS and install it
-
 4. Restart Home Assistant
 5. Configure as described in the following text
 
@@ -75,103 +64,102 @@ Add this to your `configuration.yaml`:
 ```yaml
 notify:
   - platform: notiscript
-    name: my_notify_handler
-    script: fallback_script  # optional
+    name: my_notifier
+    script_suffix: my_script  # optional
+    script_fields:  # optional
+      message: msg
+      title: heading
 ```
 
-| Option   | Required | Description                                            |
-| -------- | -------- | ------------------------------------------------------ |
-| `name`   | ✅        | The notifier name, becomes `notify.<name>`             |
-| `script` | ❌        | Optional fallback script name if none given at runtime |
+| Option          | Required | Description                                           |
+| --------------- | -------- | ----------------------------------------------------- |
+| `name`          | ✅        | The notifier name, becomes `notify.<name>`            |
+| `script_suffix` | ❌        | Optional script name to call `script.<script_suffix>` |
+| `script_fields` | ❌        | Optional fields to pass to script                     |
 
 ## 4. 🚀 How It Works
 
-When you call:
+NotiScript provides two main transformation mechanisms:
 
+### 4.1. Script Selection (script_suffix)
+
+Determines which script to call, with three priority levels:
+1. From notification data
+2. From configuration
+3. From notifier name (fallback)
+
+### 4.2. Data Transformation (script_fields)
+Defines how notification data should be transformed before being passed to the script:
+1. From notification data
+2. From configuration
+
+When `script_fields` is present:
+- The values from `script_fields` are passed directly to the script
+- Original notification fields are moved to `data.notifier_fields`
+- All other data is preserved in `data`
+
+## 5. 🧪 Examples
+
+### 5.1. Basic Usage
 ```yaml
-service: notify.my_notify_handler
+service: notify.my_notifier
 data:
   message: "Hello"
-  title: "Info"
+  title: "Test"
   data:
-    script_id: "custom_script"
+    script_fields:
+      message: "msg"
+      title: "heading"
+    custom_field: "value"
 ```
 
-The integration determines the script to call using this priority:
-
-1. `data.script_id` → `script.custom_script`
-2. Configured `script:` → e.g. `script.fallback_script`
-3. Notifier name → `script.my_notify_handler`
-
-The selected script receives all fields (`message`, `title`, `data`) as variables.
-
-## 5. 🧪 Example Scripts
-
+### 5.2. Multiple Scripts
 ```yaml
-script:
-  fallback_script:
-    sequence:
-      - service: logbook.log
-        data:
-          name: "Fallback Script"
-          message: "Msg: {{ message }} | Title: {{ title }} | Data: {{ data | to_json }}"
+notify:
+  - platform: notiscript
+    name: urgent_notifier
+    script_suffix: urgent_script
+    script_fields:
+      message: alert
+      title: warning
+  - platform: notiscript
+    name: normal_notifier
+    script_suffix: normal_script
+    script_fields:
+      message: info
+      title: status
 ```
 
+### 5.3. Dynamic Script Selection
 ```yaml
-  custom_script:
-    sequence:
-      - service: notify.telegram_bot
-        data:
-          message: "{{ message }}"
+service: notify.my_notifier
+data:
+  data:
+    script_suffix: urgent_script  # Override default script
+    script_fields:
+      message: alert
+      title: warning
 ```
 
-## 6. 🧰 Example Automation
-
-```yaml
-automation:
-  - alias: Test Notification
-    trigger:
-      - platform: time
-        at: "12:00:00"
-    action:
-      - service: notify.my_notify_handler
-        data:
-          message: "It is noon"
-          title: "Time Check"
-```
-
-## 7. 🔍 Debugging
+## 6. 🔍 Debugging
 
 Enable debug logging in `configuration.yaml`:
-
 ```yaml
 logger:
-  default: warning
   logs:
     custom_components.notiscript: debug
 ```
 
-Check logs via **Developer Tools → Logs**.
+This will show:
+- Script selection process
+- Data transformation steps
+- Final data structure sent to script
+- Any errors during execution
 
-## 8. 💬 FAQ
+## 7. 📚 Documentation
 
-### 8.1. Why is `notify.my_notify_handler` not visible as an entity?
+For detailed documentation including diagrams and more examples, see [concept.md](concept.md).
 
-Because notify services are not entities – they are service endpoints only.
+## 8. License
 
-## 9. 👨‍💻 Development Notes
-
-- Based on `BaseNotificationService`
-- Uses `async_call` to `script` domain
-- Accepts all standard `notify` fields: `message`, `title`, `target`, `data`
-- `target` is ignored (but can be forwarded if needed)
-
-## 10. 🏁 Roadmap
-
-1. Optional: entity registry integration (cosmetic)
-
-2. Add a data structure `script_fields` that is an object and if given, the script is called with the fields filled according to this object. In other words: the script_fields are pulled to the top level so that the script could have these script_fields as "fields".
-
-## 11. 📝 License
-
-> [See `LICENSE`](./LICENSE)
+See [LICENSE](./LICENSE)
