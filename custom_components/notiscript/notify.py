@@ -81,6 +81,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 async def async_get_service(hass, config, discovery_info=None):
     """Get the notiscript notification service.
     
+    This is a required function signature from Home Assistant.
+    It is called by Home Assistant to initialize the notification service.
+    
     Args:
         hass: The Home Assistant instance
         config: Configuration dictionary containing:
@@ -88,6 +91,9 @@ async def async_get_service(hass, config, discovery_info=None):
             - script_suffix: Optional script name to call
             - script_fields: Optional fields to pass to script
         discovery_info: Optional discovery information
+        
+    Returns:
+        An instance of NotiScriptNotificationService
     """
     config_script_suffix = config.get(CONF_SCRIPT_SUFFIX)
     config_script_fields = config.get(CONF_SCRIPT_FIELDS, {})
@@ -99,8 +105,14 @@ async def async_get_service(hass, config, discovery_info=None):
 class NotiScriptNotificationService(BaseNotificationService):
     """Implementation of the notiscript notification service.
     
-    This service transforms notification data according to script_fields configuration
-    and calls the appropriate script with the transformed data structure.
+    This service inherits from BaseNotificationService and provides a flexible way
+    to transform notification data and call scripts. It supports two main features:
+    
+    1. Dynamic script selection through script_suffix
+    2. Data transformation through script_fields
+    
+    The service can be configured in configuration.yaml and supports runtime
+    overrides through notification data.
     """
 
     def __init__(self, hass, notifier_name, config_script_suffix, config_script_fields):
@@ -120,25 +132,33 @@ class NotiScriptNotificationService(BaseNotificationService):
     async def async_send_message(self, message="", **kwargs):
         """Send a notification message.
         
+        This is a required method signature from Home Assistant.
+        It is called by Home Assistant when a notification should be sent.
+        
         This method transforms the notification data according to script_fields
         and calls the appropriate script with the transformed data.
         
         Args:
-            message: The notification message
+            message: The notification message (required by Home Assistant)
             **kwargs: Additional notification data including:
                 - title: Optional notification title
                 - data: Optional dictionary of additional data
                 - script_suffix: Optional override for script name
                 - script_fields: Optional override for fields to pass to script
         """
-        title = kwargs.get(ATTR_TITLE)
-        data = kwargs.get(ATTR_DATA) or {}
+        # Define all standard notification fields with default values
+        standard_fields = {
+            ATTR_MESSAGE: message,
+            ATTR_TITLE: kwargs.get(ATTR_TITLE),
+            ATTR_TARGET: kwargs.get(ATTR_TARGET),
+            ATTR_DATA: kwargs.get(ATTR_DATA) or {},  # Ensure data is always a dictionary
+        }
 
         # Handling script_suffix
         ########################
 
         # Prio 1: script_suffix from data from notifier call
-        script_suffix = data.get(CONF_SCRIPT_SUFFIX)
+        script_suffix = standard_fields[ATTR_DATA].get(CONF_SCRIPT_SUFFIX)
 
         # Prio 2: script_suffix from configuration of notifier in configuration.yaml
         if not script_suffix and self.config_script_suffix:
@@ -152,29 +172,23 @@ class NotiScriptNotificationService(BaseNotificationService):
         ########################
 
         # Prio 1: script_fields from data from notifier call
-        script_fields = data.get(CONF_SCRIPT_FIELDS, {})
+        script_fields = standard_fields[ATTR_DATA].get(CONF_SCRIPT_FIELDS, {})
 
         # Prio 2: script_fields from configuration of notifier in configuration.yaml
         if not script_fields and self.config_script_fields:
             script_fields = self.config_script_fields
 
         # Remove control parameters from data
-        if CONF_SCRIPT_SUFFIX in data:
-            del data[CONF_SCRIPT_SUFFIX]
-        if CONF_SCRIPT_FIELDS in data:
-            del data[CONF_SCRIPT_FIELDS]
+        # These are special parameters that control the behavior of the notifier
+        # and should not be passed to the script
+        control_parameters = {CONF_SCRIPT_SUFFIX, CONF_SCRIPT_FIELDS}
+        for param in control_parameters:
+            if param in standard_fields[ATTR_DATA]:
+                del standard_fields[ATTR_DATA][param]
 
         # If script_fields is present, move specified fields to data.notifier_fields
         if script_fields:
             notifier_fields = {}
-            
-            # Define all possible standard notification fields
-            standard_fields = {
-                ATTR_MESSAGE: message,
-                ATTR_TITLE: title,
-                ATTR_TARGET: kwargs.get(ATTR_TARGET),
-                ATTR_DATA: kwargs.get(ATTR_DATA, {}),  # Include original data
-            }
             
             # Add all standard fields that have values
             for field, value in standard_fields.items():
@@ -189,14 +203,21 @@ class NotiScriptNotificationService(BaseNotificationService):
             
             # Create service_data with script_fields values and preserve all original data
             service_data = script_fields.copy()
-            service_data["data"] = data.copy()  # Keep all original data
+            service_data["data"] = standard_fields[ATTR_DATA].copy()  # Keep all original data
             service_data["data"]["notifier_fields"] = notifier_fields  # Add notifier_fields to it
         else:
-            service_data = {
-                "message": message,
-                "title": title,
-                "data": data,
-            }
+            # When no script_fields, include all fields directly
+            # Create service_data with all standard fields that have values
+            service_data = {}
+            for field, value in standard_fields.items():
+                if value is not None:
+                    service_data[field] = value
+            
+            # Add any additional fields from kwargs that aren't control parameters
+            control_parameters = {CONF_SCRIPT_SUFFIX, CONF_SCRIPT_FIELDS}
+            for key, value in kwargs.items():
+                if key not in control_parameters:
+                    service_data[key] = value
 
         _LOGGER.debug(f"[notiscript] Calling script: script.{script_suffix} with data: {service_data}")
 
