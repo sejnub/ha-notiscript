@@ -72,7 +72,7 @@ CONF_SCRIPT_FIELDS = "script_fields"
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Optional(CONF_SCRIPT_SUFFIX): cv.string,
-        vol.Optional(CONF_SCRIPT_FIELDS): vol.Schema({str: str}),  # Object with string keys and values
+        vol.Optional(CONF_SCRIPT_FIELDS): vol.Schema({str: vol.Any(str, dict, list, int, float, bool)}),  # Allow complex values
         vol.Required("name"): cv.string,  # wichtig für Zugriff auf den Namen als Fallback
     }
 )
