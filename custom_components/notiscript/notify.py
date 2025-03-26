@@ -58,6 +58,7 @@ from homeassistant.components.notify import (
     ATTR_MESSAGE,
     ATTR_TITLE,
     ATTR_DATA,
+    ATTR_TARGET,
     PLATFORM_SCHEMA,
     BaseNotificationService,
 )
@@ -166,8 +167,24 @@ class NotiScriptNotificationService(BaseNotificationService):
         # If script_fields is present, move specified fields to data.notifier_fields
         if script_fields:
             notifier_fields = {}
+            
+            # Define all possible standard notification fields
+            standard_fields = {
+                ATTR_MESSAGE: message,
+                ATTR_TITLE: title,
+                ATTR_TARGET: kwargs.get(ATTR_TARGET),
+                ATTR_DATA: kwargs.get(ATTR_DATA, {}),  # Include original data
+            }
+            
+            # Add all standard fields that have values
+            for field, value in standard_fields.items():
+                if value is not None:
+                    notifier_fields[field] = value
+            
+            # Add any additional fields from kwargs that aren't control parameters
+            control_parameters = {CONF_SCRIPT_SUFFIX, CONF_SCRIPT_FIELDS}
             for key, value in kwargs.items():
-                if key not in (ATTR_DATA, CONF_SCRIPT_SUFFIX, CONF_SCRIPT_FIELDS):
+                if key not in control_parameters:
                     notifier_fields[key] = value
             
             # Create service_data with script_fields values and preserve all original data
