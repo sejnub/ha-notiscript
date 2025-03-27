@@ -1,6 +1,6 @@
 # NotiScript – Custom Notification Platform for Home Assistant
 
-**NotiScript** is a custom `notify` platform that that enables you to route notifier calls to scripts and provides some data transformation capabilities along the way. 
+**NotiScript** is a custom `notify` platform that that enables you to route notifier calls to scripts and provides some data transformation capabilities along the way.
 
 The main purpose is to be able to use scripts in contexts where normally only notifiers are possible (the alert integration for example).
 
