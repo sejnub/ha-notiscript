@@ -84,15 +84,15 @@ notify:
     name: my_notifier
     script_suffix: my_script  # optional
     script_fields:  # optional
-      title: Hello
-      message: world
+      title: I am a new title
+      message: I am a new message
 ```
 
-| Option          | Required | Description                                           |
-| --------------- | -------- | ----------------------------------------------------- |
-| `name`          | ✅        | The notifier name, becomes `notify.<name>`            |
-| `script_suffix` | ❌        | Optional script name to call `script.<script_suffix>` |
-| `script_fields` | ❌        | Optional fields to pass to script                     |
+| Option          | Required | Description                                                                                                  |
+| --------------- | -------- | ------------------------------------------------------------------------------------------------------------ |
+| `name`          | ✅        | The created notifier will now be `notify.<name>`                                                                   |
+| `script_suffix` | ❌        | The script called will now be `script.<script_suffix>`                                                            |
+| `script_fields` | ❌        | Fields to pass to script. This replaces the original parameters which are moved to `<service data>.data.notifier_fields` |
 
 ## 5. How It Works
 
