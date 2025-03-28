@@ -21,19 +21,25 @@ The main purpose is to be able to use scripts in contexts where normally only no
 - [8. Documentation](#8-documentation)
 - [9. License](#9-license)
 
-## 1. Features
+## 1. State of this software
+
+The script seems to work fine (at least on my machine 😊).
+The documentation is to lengthy and not to the point; i will improve it if some people want to use this software.
+This is my first integration for Home Assistant and i am a programmer but python is new to me.
+
+## 2. Features
 
 - Can be used like any other `notify` platform
+- Can be used to create notifiers (services of the form `notify.<my name>`) that forward their calls to a configured script.
+- Preserves original notification service data
 - Supports dynamic script selection with three priority levels
 - Provides data transformation capabilities
-- Preserves original notification data
-- Works with automations, alerts, UI services
 
-## 2. Installation
+## 3. Installation
 
 You can find all the code at [GitHub / ha-notiscript](https://github.com/sejnub/ha-notiscript)
 
-### 2.1. Install via HACS (recommended)
+### 3.1. Install via HACS (recommended)
 
 To install this integration using [HACS](https://hacs.xyz):
 
@@ -45,7 +51,7 @@ To install this integration using [HACS](https://hacs.xyz):
 4. Restart Home Assistant
 5. Configure as described in the following text
 
-### 2.2. Install manually from repository
+### 3.2. Install manually from repository
 
 1. Create the folder structure `<config_dir>/custom_components/notiscript/`
 
@@ -60,7 +66,7 @@ To install this integration using [HACS](https://hacs.xyz):
 
 5. Restart Home Assistant
 
-## 3. Most simple use case
+## 4. Most simple use case
 
 If you add
 
@@ -74,7 +80,7 @@ to your configuration.yaml then a notifier (*not* an entity, so don't look for i
 
 This notifier when called will forward that call to `script.my_notifier` with all call parameters unchanged.
 
-## 4. More advanced configuration
+## 5. More advanced configuration
 
 Add this to your `configuration.yaml`:
 
@@ -94,11 +100,11 @@ notify:
 | `script_suffix` | ❌        | The script called will now be `script.<script_suffix>`                                                            |
 | `script_fields` | ❌        | Fields to pass to script. This replaces the original parameters which are moved to `<service data>.data.notifier_fields` |
 
-## 5. How It Works
+## 6. How It Works
 
 NotiScript provides two main transformation mechanisms:
 
-### 5.1. Script Selection (script_suffix)
+### 6.1. Script Selection (script_suffix)
 
 Determines which script to call, with three priority levels:
 
@@ -106,7 +112,7 @@ Determines which script to call, with three priority levels:
 2. From configuration
 3. From notifier name (fallback)
 
-### 5.2. Data Transformation (script_fields)
+### 6.2. Data Transformation (script_fields)
 
 Defines how notification data should be transformed before being passed to the script:
 
@@ -119,9 +125,9 @@ When `script_fields` is present:
 - Original notification fields are moved to `data.notifier_fields`
 - All other data is preserved in `data`
 
-## 6. Examples
+## 7. Examples
 
-### 6.1. Basic Usage
+### 7.1. Basic Usage
 
 ```yaml
 service: notify.my_notifier
@@ -135,7 +141,7 @@ data:
     custom_field: "value"
 ```
 
-### 6.2. Multiple Scripts
+### 7.2. Multiple Scripts
 
 ```yaml
 notify:
@@ -153,7 +159,7 @@ notify:
       title: status
 ```
 
-### 6.3. Dynamic Script Selection
+### 7.3. Dynamic Script Selection
 
 ```yaml
 service: notify.my_notifier
@@ -165,7 +171,7 @@ data:
       title: warning
 ```
 
-## 7. Debugging
+## 8. Debugging
 
 Enable debug logging in `configuration.yaml`:
 
@@ -182,10 +188,10 @@ This will show:
 - Final data structure sent to script
 - Any errors during execution
 
-## 8. Documentation
+## 9. Documentation
 
 For detailed documentation including diagrams and more examples, see [concept.md](concept.md).
 
-## 9. License
+## 10. License
 
 See [LICENSE](./LICENSE)
