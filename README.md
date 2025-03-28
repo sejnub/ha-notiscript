@@ -23,7 +23,7 @@ The main purpose is to be able to use scripts in contexts where normally only no
 
 ## 1. State of this software
 
-The script seems to work fine (at least on my machine 😊).
+The integration seems to work fine (at least on my machine 😊).
 The documentation is to lengthy and not to the point; i will improve it if anybody shows interest in this software.
 I am a programmer but python is new to me and this is my first integration for Home Assistant.
 
