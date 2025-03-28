@@ -24,7 +24,7 @@ The main purpose is to be able to use scripts in contexts where normally only no
 ## 1. State of this software
 
 The script seems to work fine (at least on my machine 😊).
-The documentation is to lengthy and not to the point; i will improve it if some people want to use this software.
+The documentation is to lengthy and not to the point; i will improve it if anybody shows interest in this software.
 This is my first integration for Home Assistant and i am a programmer but python is new to me.
 
 ## 2. Features
