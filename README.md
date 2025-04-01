@@ -166,7 +166,7 @@ When `script_fields` is present:
 
 #### 6.2.2. Long version
 
-The `script_fields` mechanism allows you to add custom data to the script call. It supports various data types including strings, dictionaries, lists, integers, floats, and booleans. 
+The `script_fields` mechanism allows you to add custom data to the script call. It supports various data types including strings, dictionaries, lists, integers, floats, and booleans.
 
 ```mermaid
 graph LR
